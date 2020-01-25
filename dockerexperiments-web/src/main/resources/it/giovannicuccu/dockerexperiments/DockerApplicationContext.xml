@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation=" 		http://www.springframework.org/schema/beans 		https://www.springframework.org/schema/beans/spring-beans.xsd 		http://www.springframework.org/schema/context 		https://www.springframework.org/schema/context/spring-context.xsd 		http://www.springframework.org/schema/aop 		https://www.springframework.org/schema/aop/spring-aop.xsd     	http://www.springframework.org/schema/tx     	https://www.springframework.org/schema/tx/spring-tx.xsd     	http://www.springframework.org/schema/util     	https://www.springframework.org/schema/util/spring-util.xsd 		http://www.springframework.org/schema/jdbc 		https://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+    <context:annotation-config/>
+
+    <bean id="oracleDataSource" class="com.zaxxer.hikari.HikariDataSource">
+        <constructor-arg>
+            <bean id="diagConfig" class="com.zaxxer.hikari.HikariConfig">
+                <property name="poolName" value="springHikariCP" />
+                <property name="dataSourceClassName"   value="oracle.jdbc.pool.OracleDataSource" />
+                <property name="maximumPoolSize" value="2" />
+                <property name="minimumIdle" value="1" />
+                <property name="autoCommit" value="false" />
+                <property name="connectionTimeout" value="5000" />
+                <property name="dataSourceProperties">
+                    <props>
+                        <prop key="url">jdbc:oracle:thin:@//oracle:1521/gio</prop>
+                        <prop key="user">sole</prop>
+                        <prop key="password">prova_1</prop>
+                    </props>
+                </property>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="oracleDataSource"/>
+    </bean>
+    <aop:config>
+        <aop:advisor advice-ref="txAdvice"
+                     pointcut="execution(* it.giovannicuccu.dockerexperiments.repository.DocumentoRepository.*(..))"/>
+    </aop:config>
+
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="load*" read-only="true"/>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="oracleDataSource"/>
+    </bean>
+
+    <bean id="documentoDao" class="it.giovannicuccu.dockerexperiments.dao.DocumentoDao"/>
+
+    <bean id="documentoRepository"
+          class="it.giovannicuccu.dockerexperiments.repository.DocumentoRepository">
+        <property name="documentoDao" ref="documentoDao"/>
+    </bean>
+
+</beans>
+

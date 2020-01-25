@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user -->
+<!-- -->
+<!-- For professional support please see -->
+<!-- http://www.qos.ch/shop/products/professionalSupport -->
+<!-- -->
+<configuration ALL="false">
+    <property name="basefile" value="${catalina.home}/logs/dockerexperiments/" />
+    <!-- <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"
+        /> -->
+    <appender name="spring"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--See http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
+        <!--and http://logback.qos.ch/manual/appenders.html#TimeBasedRollingPolicy -->
+        <!--for further documentation -->
+        <Append>true</Append>
+        <File>${basefile}spring_dockerexperiments.log</File>
+        <encoder>
+            <pattern>%d [%t] %-5p %c %m %n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${basefile}spring_dockerexperiments_old.%d{yyyy-MM-dd}.log
+            </fileNamePattern>
+        </rollingPolicy>
+    </appender>
+    <appender name="app"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--See http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
+        <!--and http://logback.qos.ch/manual/appenders.html#TimeBasedRollingPolicy -->
+        <!--for further documentation -->
+        <File>${basefile}app_dockerexperiments.log</File>
+        <Append>true</Append>
+        <encoder>
+            <pattern>%d [%t] %-5p %c %m %n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${basefile}app_dockerexperiments_old.%d{yyyy-MM-dd}.log
+            </fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+
+
+    <logger name="org.apache" additivity="false" level="DEBUG">
+        <appender-ref ref="spring" />
+    </logger>
+
+    <logger name="it.giovannicuccu" additivity="false" level="DEBUG">
+        <appender-ref ref="app" />
+    </logger>
+
+    <logger name="org.springframework" additivity="false" level="DEBUG">
+        <appender-ref ref="spring" />
+    </logger>
+
+    <root level="DEBUG">
+        <appender-ref ref="app" />
+    </root>
+</configuration>
